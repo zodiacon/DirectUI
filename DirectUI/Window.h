@@ -23,6 +23,8 @@ namespace DirectUI {
 		void Measure(const DX::SizeF&) override { }
 
 		void Invalidate(const DX::RectF& rect);
+        void Invalidate();
+        void InvalidateLayout(bool invalid);
 
 	protected:
 		void Draw(DX::Direct2D::DeviceContext& dc);
@@ -51,6 +53,7 @@ namespace DirectUI {
 		HWND _hWnd;
 		DX::Direct2D::DeviceContext _dc;
 		DX::Dxgi::SwapChain1 _swapChain;
+        bool _isLayoutInvalid = true;
 		static Window* _current;
 	};
 

@@ -28,6 +28,10 @@ namespace DirectUI {
 			return _dwriteFactory;
 		}
 
+        float GetDpi() const {
+            return _dpi;
+        }
+
 	protected:
 		virtual void OnInit();
 		virtual void OnExit();
@@ -54,6 +58,7 @@ namespace DirectUI {
 		DX::Direct2D::Factory1 _d2dfactory;
 		DX::Dxgi::SwapChain1 _swapChain;
 		DX::DirectWrite::Factory2 _dwriteFactory;
+        float _dpi;
 
 		static Application* _app;
 	};

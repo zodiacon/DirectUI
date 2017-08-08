@@ -32,14 +32,22 @@ namespace DirectUI {
 
 	enum class MouseButton {
 		None,
-		Left = MK_RBUTTON,
+		Left = MK_LBUTTON,
 		Middle = MK_MBUTTON,
 		Right = MK_RBUTTON,
 		AllButtons = Left | Middle | Right
 	};
 
+    enum class MouseKeys { 
+        Shift = 4,
+        Control = 8,
+        AllKeys = Shift | Control
+    };
+    DEFINE_ENUM_FLAG_OPERATORS(MouseKeys);
+
 	struct MouseEventArgs {
 		MouseButton Button;
+        MouseKeys Keys;
 		DX::Point2F Position;
 	};
 
@@ -69,10 +77,6 @@ namespace DirectUI {
 		UIElement& operator=(const UIElement&) = delete;
 
 	public:
-		virtual bool IsUIElement() const {
-			return true;
-		}
-
 		UIElement* GetParent() const {
 			return _parent;
 		}
@@ -100,6 +104,7 @@ namespace DirectUI {
 		}
 
 		void Invalidate() override;
+        void InvalidateLayout(bool) override;
 
 	protected:
 		virtual void OnDraw(DX::Direct2D::DeviceContext& dc, const DX::RectF& bounds) = 0;
@@ -133,7 +138,7 @@ namespace DirectUI {
 	private:
 		DX::SizeF _desiredSize;
 		UIElement* _parent;
-		DX::RectF _bounds;
+        DX::RectF _bounds{};
 
 		// events
 		std::vector<MouseEventHandler> _mouseDownHandlers, _mouseUpHandlers, _mouseMoveHandlers;

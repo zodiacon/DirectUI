@@ -47,6 +47,13 @@ void LayoutBase::OnDraw(DX::Direct2D::DeviceContext& dc, const DX::RectF& bounds
 	}
 }
 
+void LayoutBase::SetWindow(Window* window) {
+    UIElement::SetWindow(window);
+
+    for (auto& element : _children)
+        element->SetWindow(window);
+}
+
 UIElement* LayoutBase::HitTestCore(const Point2F& point) {
 	UIElement* source = nullptr;
 

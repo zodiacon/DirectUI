@@ -1,8 +1,5 @@
-// HelloWorld.cpp : Defines the entry point for the application.
-//
-
 #include "stdafx.h"
-#include "HelloWorld.h"
+#include "..\DirectUI\DirectUI.h"
 
 using namespace DirectUI;
 
@@ -14,11 +11,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR lpCmdLine, int) {
 	stack->Background(Create<SolidColorBrush>(Colors::DarkCyan()));
 
 	auto r1 = Create<DirectUI::Rectangle>();
-	r1->Fill(Create<SolidColorBrush>(Colors::Yellow())).StrokeWidth(5).Width(200).Height(150).MouseDown([](auto& src, const auto& args) {
-		auto button = args.Button;
-		int zz = 9;
-		return false;
-	});
+    r1->Fill(Create<SolidColorBrush>(Colors::Yellow())).StrokeWidth(5).Width(200).Height(150);
 
 	stack->AddChild(r1);
 	
@@ -34,11 +27,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR lpCmdLine, int) {
 	stack->AddChild(r3);
 
 	window1.Content(stack);
-	window1.MouseDown([](auto& source, const auto& args) {
-		int zz = 9;
-		return true;
-	});
-	return app.Run();
+
+    return app.Run();
 
 }
 

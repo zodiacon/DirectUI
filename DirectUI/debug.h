@@ -49,6 +49,26 @@ struct Tracer
 
         OutputDebugString(buffer);
     }
+
+    template <typename... Args>
+    auto operator()(char const * format, Args... args) const -> void {
+        char buffer[400];
+
+        auto count = sprintf_s(buffer,
+            "%s(%d): ",
+            m_filename,
+            m_line);
+
+        ASSERT(-1 != count);
+
+        ASSERT(-1 != _snprintf_s(buffer + count,
+            _countof(buffer) - count,
+            _countof(buffer) - count - 1,
+            format,
+            args...));
+
+        OutputDebugStringA(buffer);
+    }
 };
 #endif
 

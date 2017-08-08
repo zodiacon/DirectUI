@@ -74,6 +74,8 @@ LRESULT Window::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) {
 
 		break;
 
+    case WM_RBUTTONDOWN:
+    case WM_MBUTTONDOWN:
 	case WM_LBUTTONDOWN: {
 		auto args = GetMouseEventArgs(wParam, lParam);
 		auto source = get<0>(args);
@@ -97,8 +99,12 @@ LRESULT Window::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) {
 std::tuple<UIElement*, MouseEventArgs> Window::GetMouseEventArgs(WPARAM wParam, LPARAM lParam) {
 	MouseEventArgs args;
 	args.Button = static_cast<MouseButton>(wParam & static_cast<WPARAM>(MouseButton::AllButtons));
+    args.Keys = static_cast<MouseKeys>(wParam & static_cast<WPARAM>(MouseKeys::AllKeys));
 	int x = GET_X_LPARAM(lParam), y = GET_Y_LPARAM(lParam);
-	Point2F point(static_cast<float>(x), static_cast<float>(y));
+    float dpi = Application::Current()->GetDpi();
+
+    Point2F point(x * 96 / dpi, y * 96 / dpi);
+    args.Position = point;
 
 	UIElement* source = this;
 	auto content = Content();
@@ -121,9 +127,12 @@ void Window::Render() {
 
 	_current = this;
 
-	auto content = Content();
-	if (content)
-		content->Measure(_dc.GetSize());
+    if (_isLayoutInvalid) {
+        auto content = Content();
+        if (content)
+            content->Measure(_dc.GetSize());
+        _isLayoutInvalid = false;
+    }
 
 	_dc.BeginDraw();
 	_dc.Clear(ClearColor());
@@ -135,9 +144,21 @@ void Window::Render() {
 	_swapChain.Present();
 }
 
+void Window::Invalidate() {
+    ::InvalidateRect(_hWnd, nullptr, FALSE);
+}
+
 void Window::Invalidate(const DX::RectF & rect) {
+    if (rect.IsEmpty())
+        return;
+
 	RECT rc = { (int)rect.Left, (int)rect.Top, (int)rect.Right, (int)rect.Bottom };
 	::InvalidateRect(_hWnd, &rc, FALSE);
+}
+
+void Window::InvalidateLayout(bool invalid) {
+    _isLayoutInvalid = invalid;
+    Invalidate();
 }
 
 void Window::Draw(Direct2D::DeviceContext& dc) {

@@ -4,12 +4,8 @@
 
 using namespace DirectUI;
 
-UIElement* DependencyObject::GetParent() const {
-	if(IsUIElement())
-		return reinterpret_cast<const UIElement*>(this)->GetParent();
-	return nullptr;
+const UIElement* DependencyObject::GetParent() const {
+    auto element = DynamicAs<UIElement>();
+	return element ? element->GetParent() : nullptr;
 }
 
-Window* DependencyObject::GetWindow() const {
-	return _window;
-}

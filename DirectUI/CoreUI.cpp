@@ -45,6 +45,11 @@ void UIElement::Invalidate() {
 		GetWindow()->Invalidate(GetBounds());
 }
 
+void UIElement::InvalidateLayout(bool invalid) {
+    if (GetWindow())
+        GetWindow()->InvalidateLayout(invalid);
+}
+
 void ContentControl::OnDraw(DX::Direct2D::DeviceContext& dc, const DX::RectF& bounds) {
 	auto content = Content();
 	if (content)

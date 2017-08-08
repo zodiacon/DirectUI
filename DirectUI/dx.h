@@ -1312,6 +1312,10 @@ namespace DX {
 		RectF(const Point2F& topLeft, float width, float height)
 			: RectF(topLeft.X, topLeft.Y, topLeft.X + width, topLeft.Y + height) {}
 
+        bool IsEmpty() const {
+            return Width() == 0 || Height() == 0;
+        }
+
 		auto Width() const -> float {
 			return Right - Left;
 		}

@@ -18,7 +18,6 @@ namespace DirectUI {
 
 	class DependencyObject abstract {
 	public:
-
 		template<typename T, typename R = DependencyObject>
 		R& SetValue(DependencyProperty<T>& dp, const T& value, bool checkForChange = true) {
 			dp.SetValue(*this, value, checkForChange);
@@ -35,18 +34,27 @@ namespace DirectUI {
 			return static_cast<TObject&>(*this);
 		}
 
-		UIElement* GetParent() const;
-
-		virtual bool IsUIElement() const {
-			return false;
-		}
+        template<typename TObject>
+        const TObject* DynamicAs() const {
+            return dynamic_cast<const TObject* const>(this);
+        }
+        
+        const UIElement* GetParent() const;
 
 		virtual void Invalidate() {}
-		Window* GetWindow() const;
+        virtual void InvalidateLayout(bool = true) { }
 
-		void SetWindow(Window* window) {
+        Window* GetWindow() const {
+            return _window;
+        }
+
+		virtual void SetWindow(Window* window) {
 			_window = window;
 		}
+
+    protected:
+        DependencyObject() {
+        }
 
 	private:
 		Window* _window = nullptr;
@@ -58,7 +66,6 @@ namespace DirectUI {
 		AffectsLayout = 2,
 		Inherit = 4,
 		AffectsParentRender = 8,
-		AffectsParentLayout = 16
 	};
 	DEFINE_ENUM_FLAG_OPERATORS(PropertyMetadataFlags);
 
@@ -90,10 +97,13 @@ namespace DirectUI {
 				InvokeHandlers(object, oldValue, value);
 
 				// check if render is affected
-				if ((_flags & (PropertyMetadataFlags::AffectsRender | PropertyMetadataFlags::AffectsLayout)) == PropertyMetadataFlags::AffectsRender) {
-					object.Invalidate();
+				if ((_flags & (PropertyMetadataFlags::AffectsLayout)) == PropertyMetadataFlags::AffectsLayout) {
+					object.InvalidateLayout();
 				}
-			}
+                else if ((_flags & (PropertyMetadataFlags::AffectsRender)) == PropertyMetadataFlags::AffectsRender) {
+                    object.Invalidate();
+                }
+            }
 			else {
 				_values[&object] = value;
 			}
@@ -109,7 +119,7 @@ namespace DirectUI {
 			if ((_flags & PropertyMetadataFlags::Inherit) == PropertyMetadataFlags::Inherit) {
 				auto parent = object.GetParent();
 				if (parent)
-					return GetValue(*reinterpret_cast<DependencyObject*>(parent));
+					return GetValue(*parent);
 			}
 			return _defaultValue;
 		}
@@ -135,9 +145,6 @@ namespace DirectUI {
 		PropertyMetadataFlags _flags;
 		std::vector<PropertyChangedHandler> _handlers;
 	};
-
-	//template<typename T>
-	//std::map<const DependencyObject*, T> DependencyProperty<T>::_values;
 
 	class DeviceDependentResource abstract : public DependencyObject {
 	protected:

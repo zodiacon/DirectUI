@@ -16,6 +16,8 @@ namespace DirectUI {
 			return static_cast<int>(_children.size());
 		}
 
+        void SetWindow(Window* window) override;
+
 		void OnDraw(DX::Direct2D::DeviceContext& dc, const DX::RectF& bounds) override;
 
 	protected:

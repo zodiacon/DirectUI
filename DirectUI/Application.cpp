@@ -70,8 +70,8 @@ bool Application::CreateDeviceContextAndSwapChain(HWND hWnd, DX::Direct2D::Devic
 	ASSERT(swapChain);
 	CreateDeviceSwapChainBitmap(swapChain, dc);
 	
-	const auto dpi = _d2dfactory.GetDesktopDpi();
-	dc.SetDpi(dpi, dpi);
+	_dpi = _d2dfactory.GetDesktopDpi();
+	dc.SetDpi(_dpi, _dpi);
 
 	return true;
 }
