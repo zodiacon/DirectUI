@@ -45,7 +45,9 @@ namespace DirectUI {
     };
     DEFINE_ENUM_FLAG_OPERATORS(MouseKeys);
 
-	struct MouseEventArgs {
+    struct EventArgs { };
+
+	struct MouseEventArgs : EventArgs {
 		MouseButton Button;
         MouseKeys Keys;
 		DX::Point2F Position;
@@ -57,7 +59,8 @@ namespace DirectUI {
 		Collapsed
 	};
 
-	using MouseEventHandler = std::function<bool(UIElement&, const MouseEventArgs&)>;
+    template<typename TArgs = EventArgs>
+	using EventHandler = std::function<bool(UIElement&, const TArgs&)>;
 
 	class UIElement abstract : public Visual {
 		friend class Window;
@@ -77,6 +80,10 @@ namespace DirectUI {
 		UIElement& operator=(const UIElement&) = delete;
 
 	public:
+        enum EventType { 
+            MouseDownEvent, MouseUpEvent, MouseMoveEvent
+        };
+
 		UIElement* GetParent() const {
 			return _parent;
 		}
@@ -94,8 +101,18 @@ namespace DirectUI {
 			_parent = parent;
 		}
 
-		UIElement& MouseDown(const MouseEventHandler& handler) {
-			_mouseDownHandlers.push_back(handler);
+        template<typename TArgs>
+		UIElement& AddEventHandler(int type, const EventHandler<TArgs>& handler) {
+            switch (type) {
+            case MouseDownEvent:
+            case MouseUpEvent:
+            case MouseMoveEvent:
+                _mouseEvents[type].push_back(handler);
+                return *this;
+
+            default:
+                ASSERT(0);
+            }
 			return *this;
 		}
 
@@ -114,17 +131,29 @@ namespace DirectUI {
 		}
 
 	protected:
-		// event dispatchers
-		void OnMouseDown(UIElement& source, const MouseEventArgs& args) {
-			bool handled = false;
-			for (auto& handler : _mouseDownHandlers)
-				if (handled = handler(source, args))
-					break;
+        template<typename TArgs>
+        void DispatchEvent(int type, std::map<int, std::vector<EventHandler<TArgs>>>& handlers, UIElement& source, const TArgs& args) {
+            bool handled = false;
+            auto it = handlers.find(type);
+            if (it != handlers.end()) {
+                auto& handlers = it->second;
+                for (auto& handler : handlers)
+                    if (handled = handler(source, args))
+                        break;
+            }
 
-			UIElement* parent;
-			if (!handled && (parent = GetParent())) {
-				parent->OnMouseDown(source, args);
-			}
+            if (!handled) {
+                auto parent = GetParent();
+                if (parent) {
+                    parent->DispatchEvent(type, handlers, source, args);
+                }
+            }
+        }
+
+		// event dispatchers
+        template<typename TSource>
+		void OnMouseEvent(int type, TSource& source, const MouseEventArgs& args) {
+            DispatchEvent(type, _mouseEvents, source, args);
 		}
 
 	protected:
@@ -141,7 +170,7 @@ namespace DirectUI {
         DX::RectF _bounds{};
 
 		// events
-		std::vector<MouseEventHandler> _mouseDownHandlers, _mouseUpHandlers, _mouseMoveHandlers;
+        std::map<int, std::vector<EventHandler<MouseEventArgs>>> _mouseEvents;
 	};
 
 	class Control abstract : public UIElement {

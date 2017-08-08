@@ -75,13 +75,20 @@ LRESULT Window::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) {
 		break;
 
     case WM_RBUTTONDOWN:
+        DispatchMouseEvent(UIElement::MouseDownEvent, wParam, lParam);
+        return 0;
+
     case WM_MBUTTONDOWN:
-	case WM_LBUTTONDOWN: {
-		auto args = GetMouseEventArgs(wParam, lParam);
-		auto source = get<0>(args);
-		source->OnMouseDown(*source, get<1>(args));
-		break;
-	}
+        DispatchMouseEvent(UIElement::MouseDownEvent, wParam, lParam);
+        return 0;
+    
+    case WM_LBUTTONDOWN:
+        DispatchMouseEvent(UIElement::MouseDownEvent, wParam, lParam);
+        return 0;
+
+    case WM_LBUTTONDBLCLK:
+        DispatchMouseEvent(UIElement::MouseDownEvent, wParam, lParam);
+        return 0;
 
 	case WM_SIZE:
 		if (SIZE_MINIMIZED != wParam)
@@ -94,6 +101,12 @@ LRESULT Window::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) {
 	}
 
 	return ::DefWindowProc(_hWnd, message, wParam, lParam);
+}
+
+void Window::DispatchMouseEvent(int type, WPARAM wParam, LPARAM lParam) {
+    auto args = GetMouseEventArgs(wParam, lParam);
+    auto source = std::get<0>(args);
+    source->OnMouseEvent(type, *source, std::get<1>(args));
 }
 
 std::tuple<UIElement*, MouseEventArgs> Window::GetMouseEventArgs(WPARAM wParam, LPARAM lParam) {

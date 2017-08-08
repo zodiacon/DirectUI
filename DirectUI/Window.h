@@ -45,6 +45,7 @@ namespace DirectUI {
 		void ReleaseDevice();
 
 	private:
+        void DispatchMouseEvent(int type, WPARAM wParam, LPARAM lParam);
 		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 
 		std::tuple<UIElement*, MouseEventArgs> GetMouseEventArgs(WPARAM, LPARAM);
