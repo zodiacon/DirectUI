@@ -22,13 +22,13 @@ Window::Window(const wchar_t* title) {
 	SetWindow(this);
 	Application::Current()->AddWindow(_hWnd, this);
 
-	ContentProperty.RegisterPropertyChangedHandler([this](auto&, auto& oldContent, auto& newContent) {
+	ContentProperty.RegisterPropertyChangedHandler(this, [this](auto&, auto&, auto& oldContent, auto& newContent) {
 		if (oldContent) {
-			oldContent->SetParent(nullptr);
+//			oldContent->SetParent(nullptr);
 			oldContent->SetWindow(nullptr);
 		}
 		if (newContent) {
-			newContent->SetParent(this);
+//			newContent->SetParent(this);
 			newContent->SetWindow(this);
 		}
 	});
@@ -75,24 +75,27 @@ LRESULT Window::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) {
 		break;
 
     case WM_RBUTTONDOWN:
-        DispatchMouseEvent(UIElement::MouseDownEvent, wParam, lParam);
-        return 0;
-
     case WM_MBUTTONDOWN:
-        DispatchMouseEvent(UIElement::MouseDownEvent, wParam, lParam);
-        return 0;
-    
     case WM_LBUTTONDOWN:
         DispatchMouseEvent(UIElement::MouseDownEvent, wParam, lParam);
         return 0;
 
+    case WM_RBUTTONUP:
+    case WM_MBUTTONUP:
+    case WM_LBUTTONUP:
+        DispatchMouseEvent(UIElement::MouseUpEvent, wParam, lParam);
+        return 0;
+
+    case WM_MOUSEMOVE:
+        DispatchMouseEvent(UIElement::MouseMoveEvent, wParam, lParam);
+        return 0;
+
     case WM_LBUTTONDBLCLK:
-        DispatchMouseEvent(UIElement::MouseDownEvent, wParam, lParam);
+        DispatchMouseEvent(UIElement::MouseDoubleClickEvent, wParam, lParam);
         return 0;
 
 	case WM_SIZE:
-		if (SIZE_MINIMIZED != wParam)
-		{
+		if (SIZE_MINIMIZED != wParam) {
 			if (ResizeSwapChainBitmap()) {
 				Render();
 			}
@@ -103,10 +106,10 @@ LRESULT Window::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) {
 	return ::DefWindowProc(_hWnd, message, wParam, lParam);
 }
 
-void Window::DispatchMouseEvent(int type, WPARAM wParam, LPARAM lParam) {
+void Window::DispatchMouseEvent(RoutedEvent<MouseEventArgs>& event, WPARAM wParam, LPARAM lParam) {
     auto args = GetMouseEventArgs(wParam, lParam);
     auto source = std::get<0>(args);
-    source->OnMouseEvent(type, *source, std::get<1>(args));
+    event.RaiseEvent(*source, std::get<1>(args));
 }
 
 std::tuple<UIElement*, MouseEventArgs> Window::GetMouseEventArgs(WPARAM wParam, LPARAM lParam) {

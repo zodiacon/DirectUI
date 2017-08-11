@@ -14,7 +14,19 @@ namespace DirectUI {
 		return std::make_shared<T>(std::forward<Types>(args)...);
 	}
 
+    template<typename T>
+    static Ref<T> Create(std::initializer_list<Ref<UIElement>> list) {
+        return std::make_shared<T>(list);
+    }
+
 	class UIElement;
+
+    enum class BindingMode {
+        Default,
+        OneWay,
+        TwoWay,
+        OneTime
+    };
 
 	class DependencyObject abstract {
 	public:
@@ -52,6 +64,11 @@ namespace DirectUI {
 			_window = window;
 		}
 
+        template<typename T>
+        void BindTo(DependencyProperty<T>& targetDP, DependencyObject& source, DependencyProperty<T>& sourceDP, BindingMode mode = BindingMode::Default) {
+            targetDP.BindTo(*this, source, sourceDP, mode);
+        }
+
     protected:
         DependencyObject() {
         }
@@ -72,7 +89,7 @@ namespace DirectUI {
 	template<typename T>
 	class DependencyProperty {
 	public:
-		using PropertyChangedHandler = std::function<void(DependencyObject&, const T&, const T&)>;
+        using PropertyChangedHandler = std::function<void(DependencyObject&, DependencyProperty<T>&, const T&, const T&)>;
 
 		DependencyProperty(const char* name, const T& defaultValue = T(), PropertyMetadataFlags flags = PropertyMetadataFlags::None)
 			: _name(name), _defaultValue(defaultValue), _flags(flags) { }
@@ -94,7 +111,7 @@ namespace DirectUI {
 			if (checkForChange) {
 				const auto& oldValue = GetValue(object);
 				_values[&object] = value;
-				InvokeHandlers(object, oldValue, value);
+				InvokeHandlers(object, *this, oldValue, value);
 
 				// check if render is affected
 				if ((_flags & (PropertyMetadataFlags::AffectsLayout)) == PropertyMetadataFlags::AffectsLayout) {
@@ -124,26 +141,35 @@ namespace DirectUI {
 			return _defaultValue;
 		}
 
-		void RegisterPropertyChangedHandler(const PropertyChangedHandler& handler) {
-			_handlers.push_back(handler);
+        void BindTo(DependencyObject& target, DependencyObject& source, DependencyProperty<T>& sourceDP, BindingMode mode = BindingMode::Default) {
+            sourceDP.RegisterPropertyChangedHandler(&source, [&target, this](auto& object, auto&, const T&, const T& newValue) {
+                target.SetValue(*this, newValue);
+            });
+         }
+
+		void RegisterPropertyChangedHandler(DependencyObject* object, PropertyChangedHandler handler) {
+			_handlers[object].push_back(handler);
 		}
 
-		void InvokeHandlers(DependencyObject& object, const T& oldValue, const T& newValue) {
-			for (auto& handler : _handlers)
-				handler(object, oldValue, newValue);
-		}
+        void RegisterPropertyChangedHandler(DependencyObject& object, PropertyChangedHandler handler) {
+            _handlers[&object].push_back(handler);
+        }
 
-		struct PropertyChangedData {
-			PropertyChangedHandler Handler;
-			DependencyObject* Instance;
-		};
+		void InvokeHandlers(DependencyObject& object, DependencyProperty& dp, const T& oldValue, const T& newValue) {
+            auto it = _handlers.find(&object);
+            if (it == _handlers.end())
+                return;
+
+			for (auto& handler : it->second)
+				handler(object, dp, oldValue, newValue);
+		}
 
 	private:
 		T _defaultValue;
 		std::map<const DependencyObject*, T> _values;
 		std::string _name;
 		PropertyMetadataFlags _flags;
-		std::vector<PropertyChangedHandler> _handlers;
+		std::map<DependencyObject*, std::vector<PropertyChangedHandler>> _handlers;
 	};
 
 	class DeviceDependentResource abstract : public DependencyObject {

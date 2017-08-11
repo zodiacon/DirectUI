@@ -21,7 +21,10 @@ namespace DirectUI {
 		void OnDraw(DX::Direct2D::DeviceContext& dc, const DX::RectF& bounds) override;
 
 	protected:
-		LayoutBase() : UIElement() { }
+        LayoutBase(std::initializer_list<Ref<UIElement>> elements = {}) : UIElement() {
+            for (auto& element : elements)
+                AddChild(element);
+        }
 
 		UIElement* HitTestCore(const DX::Point2F& point) override;
 
@@ -41,7 +44,7 @@ namespace DirectUI {
 		DECLARE_DP(StackLayout, Orientation, LayoutOrientation);
 
 	public:
-		StackLayout() : LayoutBase() { }
+        StackLayout(std::initializer_list<Ref<UIElement>> controls = {}) : LayoutBase(controls) { }
 
 		void OnDraw(DX::Direct2D::DeviceContext& dc, const DX::RectF& bounds) override;
 		void Measure(const DX::SizeF& maximumSize) override;

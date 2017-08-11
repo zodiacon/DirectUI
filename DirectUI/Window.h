@@ -20,7 +20,7 @@ namespace DirectUI {
 		}
 
 		virtual void Render();
-		void Measure(const DX::SizeF&) override { }
+        void Measure(const DX::SizeF&) override { };
 
 		void Invalidate(const DX::RectF& rect);
         void Invalidate();
@@ -45,7 +45,7 @@ namespace DirectUI {
 		void ReleaseDevice();
 
 	private:
-        void DispatchMouseEvent(int type, WPARAM wParam, LPARAM lParam);
+        void DispatchMouseEvent(RoutedEvent<MouseEventArgs>&, WPARAM wParam, LPARAM lParam);
 		LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 
 		std::tuple<UIElement*, MouseEventArgs> GetMouseEventArgs(WPARAM, LPARAM);

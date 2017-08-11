@@ -10,7 +10,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR lpCmdLine, int) {
 	mainWindow.ClearColor(Colors::LightGray());
 
 	auto tb = Create<TextBlock>();
-	tb->FontSize(30).Text(L"Hello, TextBlock!").Foreground(Brushes::Black());
+	tb->Text(L"Hello, TextBlock!").Foreground(Brushes::Black()).FontSize(30);
 
 	mainWindow.Content(tb);
 

@@ -14,4 +14,5 @@
 #include "Brushes.h"
 #include "Layout.h"
 #include "Shapes.h"
+#include "Buttons.h"
 #include "Text.h"

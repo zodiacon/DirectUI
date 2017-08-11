@@ -6,7 +6,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR lpCmdLine, int) {
 	Application app;
 	app.Initialize();
 
-    static bool yellow = false;
+    bool yellow = false;
 
 	Window mainWindow(L"Hit Testing Demo");
 	mainWindow.ClearColor(Colors::Lime());
@@ -20,7 +20,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR lpCmdLine, int) {
 		auto tb = Create<TextBlock>();
 		const wchar_t text[] = { (const wchar_t)(i + L'0'), L'\0' };
 		tb->Foreground(Create<SolidColorBrush>(Colors::Red())).TextAlignment(TextAlignmentType::Center).Text(text).FontSize(30);
-		grid->AddEventHandler<MouseEventArgs>(UIElement::MouseDownEvent, [](auto& source, const auto& args) -> bool {
+		grid->AddEventHandler<MouseEventArgs>(UIElement::MouseDownEvent, [&yellow](auto& source, const auto& args) -> bool {
 			source.Background(yellow ? Brushes::Blue() : Brushes::Yellow());
             yellow = !yellow;
 			return true;

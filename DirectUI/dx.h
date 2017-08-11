@@ -1340,6 +1340,13 @@ namespace DX {
 			return SizeF(Width(), Height());
 		}
 
+        void MoveSize(float left, float top, float right, float bottom) {
+            Left += left;
+            Top += top;
+            Right += right;
+            Bottom += bottom;
+        }
+
 		float Left;
 		float Top;
 		float Right;
@@ -3875,6 +3882,12 @@ namespace DX {
 
 			auto SetStrikethrough(bool hasStrikethrough,
 				TextRange const & textRange) const -> void;
+
+            auto GetMetrics()->TextMetrics {
+                DWRITE_TEXT_METRICS metrics;
+                Get()->GetMetrics(&metrics);
+                return TextMetrics(metrics);
+            }
 
 			// SetDrawingEffect
 
