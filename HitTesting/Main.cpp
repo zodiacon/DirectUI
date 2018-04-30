@@ -1,6 +1,7 @@
 #include "..\DirectUI\DirectUI.h"
 
 using namespace DirectUI;
+using namespace DX::DirectWrite;
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR lpCmdLine, int) {
 	Application app;
@@ -16,10 +17,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR lpCmdLine, int) {
 	for (int i = 0; i < 10; i++) {
 		auto grid = Create<UniformGridLayout>();
 		float c = i / 10.0f;
-		grid->Width(100).Height(100).Background(Create<SolidColorBrush>(DX::Color(c, c, c))).Width(100).Height(100);;
+		grid->Width(100)->Height(100)->Background(Create<SolidColorBrush>(DX::Color(c, c, c)))->Width(100)->Height(100);;
 		auto tb = Create<TextBlock>();
 		const wchar_t text[] = { (const wchar_t)(i + L'0'), L'\0' };
-		tb->Foreground(Create<SolidColorBrush>(Colors::Red())).TextAlignment(TextAlignmentType::Center).Text(text).FontSize(30);
+		tb->Foreground(Create<SolidColorBrush>(Colors::Red()))->TextAlignment(TextAlignment::Center)->Text(text)->FontSize(30);
 		grid->AddEventHandler<MouseEventArgs>(UIElement::MouseDownEvent, [&yellow](auto& source, const auto& args) -> bool {
 			source.Background(yellow ? Brushes::Blue() : Brushes::Yellow());
             yellow = !yellow;

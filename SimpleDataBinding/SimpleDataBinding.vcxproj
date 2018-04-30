@@ -23,7 +23,7 @@
     <ProjectGuid>{EC50FDAE-6101-4C4C-9DBE-B250530A6E66}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>SimpleDataBinding</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.16232.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

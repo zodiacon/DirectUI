@@ -10,24 +10,24 @@ DEFINE_DP_WITH_FLAGS(TextBlock, Foreground, Ref<Brush>, Brushes::Black(), Proper
 DEFINE_DP_WITH_FLAGS(TextBlock, Text, std::wstring, L"", PropertyMetadataFlags::AffectsRender | PropertyMetadataFlags::AffectsLayout);
 DEFINE_DP_WITH_FLAGS(TextBlock, Underline, bool, false, PropertyMetadataFlags::AffectsRender);
 DEFINE_DP_WITH_FLAGS(TextBlock, Strikethrough, bool, false, PropertyMetadataFlags::AffectsRender);
-DEFINE_DP_WITH_FLAGS(TextBlock, TextAlignment, TextAlignmentType, TextAlignmentType::Leading, PropertyMetadataFlags::AffectsRender);
-DEFINE_DP_WITH_FLAGS(TextBlock, ReadingDirection, ReadingDirectionType, ReadingDirectionType::LeftToRight, PropertyMetadataFlags::AffectsRender);
+DEFINE_DP_WITH_FLAGS(TextBlock, TextAlignment, DirectWrite::TextAlignment, DirectWrite::TextAlignment::Leading, PropertyMetadataFlags::AffectsRender);
+DEFINE_DP_WITH_FLAGS(TextBlock, ReadingDirection, DirectWrite::ReadingDirection, DirectWrite::ReadingDirection::LeftToRight, PropertyMetadataFlags::AffectsRender);
 
-DEFINE_CONVERT(DX::DirectWrite::TextAlignment, TextAlignmentType, ToDirectWrite);
-DEFINE_CONVERT(DX::DirectWrite::FontWeight, FontWeightType, ToDirectWrite);
-DEFINE_CONVERT(DX::DirectWrite::FontStyle, FontStyleType, ToDirectWrite);
-DEFINE_CONVERT(DX::DirectWrite::ReadingDirection, ReadingDirectionType, ToDirectWrite);
+//DEFINE_CONVERT(DirectWrite::TextAlignment, TextAlignmentType, ToDirectWrite);
+//DEFINE_CONVERT(DirectWrite::FontWeight, FontWeightType, ToDirectWrite);
+//DEFINE_CONVERT(DirectWrite::FontStyle, FontStyleType, ToDirectWrite);
+//DEFINE_CONVERT(DirectWrite::ReadingDirection, ReadingDirectionType, ToDirectWrite);
 
 void TextBlock::Measure(const DX::SizeF& maximumSize) {
     auto& factory = Application::Current()->DWriteFactory();
 
     DX::SizeF size;
     
-    _format = factory.CreateTextFormat(FontFamily().c_str(), ToDirectWrite(FontWeight()), ToDirectWrite(FontStyle()), DX::DirectWrite::FontStretch::Normal, FontSize());
-    _format.SetReadingDirection(ToDirectWrite(ReadingDirection()));
+    _format = factory.CreateTextFormat(FontFamily().c_str(), FontWeight(), FontStyle(), DX::DirectWrite::FontStretch::Normal, FontSize());
+    _format.SetReadingDirection(ReadingDirection());
 
     _layout = factory.CreateTextLayout(Text().c_str(), static_cast<int>(Text().size()), _format, maximumSize.Width, maximumSize.Height);
-    _layout.SetTextAlignment(ToDirectWrite(TextAlignment()));
+    _layout.SetTextAlignment(TextAlignment());
     auto metrics = _layout.GetMetrics();
     size.Width = metrics.Width;
     size.Height = metrics.Height;

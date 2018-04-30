@@ -23,7 +23,7 @@
     <ProjectGuid>{8876F5EC-7DAF-4B5C-9787-FE79D02EC43C}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>CanvasLayoutDemo</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.16232.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

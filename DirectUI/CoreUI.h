@@ -28,44 +28,6 @@ namespace DirectUI {
 	class Visual abstract : public DependencyObject {
 	};
 
-    enum class TextAlignmentType {
-        Leading = DX::DirectWrite::TextAlignment::Leading,
-        Trailing = DX::DirectWrite::TextAlignment::Trailing,
-        Center = DX::DirectWrite::TextAlignment::Center,
-        Justified = DX::DirectWrite::TextAlignment::Justified,
-    };
-
-    enum class FontWeightType {
-        Thin = DX::DirectWrite::FontWeight::Thin,
-        ExtraLight = DX::DirectWrite::FontWeight::ExtraLight,
-        UltraLight = DX::DirectWrite::FontWeight::UltraLight,
-        Light = DX::DirectWrite::FontWeight::Light,
-        SemiLight = DX::DirectWrite::FontWeight::SemiLight,
-        Normal = DX::DirectWrite::FontWeight::Normal,
-        Regular = DX::DirectWrite::FontWeight::Regular,
-        Medium = DX::DirectWrite::FontWeight::Medium,
-        DemiBold = DX::DirectWrite::FontWeight::DemiBold,
-        SemiBold = DX::DirectWrite::FontWeight::SemiBold,
-        Bold = DX::DirectWrite::FontWeight::Bold,
-        ExtraBold = DX::DirectWrite::FontWeight::ExtraBold,
-        UltraBold = DX::DirectWrite::FontWeight::UltraBold,
-        Black = DX::DirectWrite::FontWeight::Black,
-        Heavy = DX::DirectWrite::FontWeight::Heavy,
-        ExtraBlack = DX::DirectWrite::FontWeight::ExtraBlack,
-        UltraBlack = DX::DirectWrite::FontWeight::UltraBlack
-    };
-
-    enum class FontStyleType {
-        Normal = DX::DirectWrite::FontStyle::Normal,
-        Italic = DX::DirectWrite::FontStyle::Italic,
-        Oblique = DX::DirectWrite::FontStyle::Oblique,
-    };
-
-    enum class ReadingDirectionType {
-        LeftToRight = DX::DirectWrite::ReadingDirection::LeftToRight,
-        RightToLeft = DX::DirectWrite::ReadingDirection::RightToLeft,
-    };
-
 	enum class HorizontalAlignmentType {
 		Left, Right, Center, Stretch
 	};
@@ -122,11 +84,13 @@ namespace DirectUI {
             return _strategy;
         }
 
-        void AddHandler(UIElement& element, const EventHandler<TArgs>& handler) {
+		template<typename Callable = EventHandler<TArgs>>
+        void AddHandler(UIElement& element, const Callable& handler) {
             _handlers[&element].push_back(handler);
         }
 
-        void AddHandler(UIElement* element, const EventHandler<TArgs>& handler) {
+		template<typename Callable = EventHandler<TArgs>>
+		void AddHandler(UIElement* element, const Callable& handler) {
             _handlers[element].push_back(handler);
         }
 
@@ -169,8 +133,8 @@ namespace DirectUI {
 		DECLARE_DP(UIElement, UserData, PVOID);
         DECLARE_DP(UIElement, FontSize, float);
         DECLARE_DP(UIElement, FontFamily, std::wstring);
-        DECLARE_DP(UIElement, FontWeight, FontWeightType);
-        DECLARE_DP(UIElement, FontStyle, FontStyleType);
+        DECLARE_DP(UIElement, FontWeight, DX::DirectWrite::FontWeight);
+        DECLARE_DP(UIElement, FontStyle, DX::DirectWrite::FontStyle);
 
     private:
 		UIElement(const UIElement&) = delete;
@@ -191,11 +155,13 @@ namespace DirectUI {
         
         void SetParent(UIElement* parent) {
 			ASSERT(_parent == nullptr);
+			if (_parent)
+				throw DirectUIException("parent cannot be changed without unloading from the visual tree");
 			_parent = parent;
 		}
 
-        template<typename TArgs = EventArgs>
-        UIElement& AddEventHandler(RoutedEvent<TArgs>& event, const EventHandler<TArgs>& handler) {
+        template<typename TArgs = EventArgs, typename Callable = EventHandler<TArgs>>
+        UIElement& AddEventHandler(RoutedEvent<TArgs>& event, const Callable& handler) {
             event.AddHandler(this, handler);
             return *this;
         }

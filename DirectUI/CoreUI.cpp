@@ -18,8 +18,8 @@ DEFINE_DP(UIElement, UserData, PVOID, nullptr);
 
 DEFINE_DP_WITH_FLAGS(UIElement, FontSize, float, 12.0f, PropertyMetadataFlags::AffectsRender | PropertyMetadataFlags::AffectsLayout | PropertyMetadataFlags::Inherit);
 DEFINE_DP_WITH_FLAGS(UIElement, FontFamily, std::wstring, L"Arial", PropertyMetadataFlags::AffectsRender | PropertyMetadataFlags::Inherit);
-DEFINE_DP_WITH_FLAGS(UIElement, FontWeight, FontWeightType, FontWeightType::Normal, PropertyMetadataFlags::AffectsRender);
-DEFINE_DP_WITH_FLAGS(UIElement, FontStyle, FontStyleType, FontStyleType::Normal, PropertyMetadataFlags::AffectsRender);
+DEFINE_DP_WITH_FLAGS(UIElement, FontWeight, DirectWrite::FontWeight, DirectWrite::FontWeight::Normal, PropertyMetadataFlags::AffectsRender);
+DEFINE_DP_WITH_FLAGS(UIElement, FontStyle, DirectWrite::FontStyle, DirectWrite::FontStyle::Normal, PropertyMetadataFlags::AffectsRender);
 
 DEFINE_DP_WITH_FLAGS(UIElement, Margin, Thickness, Thickness(), PropertyMetadataFlags::AffectsLayout);
 

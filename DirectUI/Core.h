@@ -4,6 +4,10 @@ namespace DirectUI {
 	class UIElement;
 	class Window;
 
+	struct DirectUIException : std::exception {
+		DirectUIException(const char* message) : std::exception(message) {}
+	};
+
 	template<typename T>
 	using Ref = std::shared_ptr<T>;
 
@@ -31,9 +35,15 @@ namespace DirectUI {
 	class DependencyObject abstract {
 	public:
 		template<typename T, typename R = DependencyObject>
-		R& SetValue(DependencyProperty<T>& dp, const T& value, bool checkForChange = true) {
+		R* SetValue(DependencyProperty<T>& dp, const T& value, bool checkForChange = true) {
 			dp.SetValue(*this, value, checkForChange);
-			return static_cast<R&>(*this);
+			return static_cast<R*>(this);
+		}
+
+		template<typename T, typename R = DependencyObject>
+		R* SetValueRef(DependencyProperty<T>& dp, const T& value, bool checkForChange = true) {
+			dp.SetValue(*this, value, checkForChange);
+			return static_cast<R*>(this);
 		}
 
 		template<typename T>
@@ -180,9 +190,14 @@ namespace DirectUI {
 	};
 }
 
+#define DECLARE_DP2(class, name, type)	\
+	public: static DependencyProperty<type> name##Property;	\
+	class* name(const type& value) { return SetValueRef<type, class>(name##Property, value); }	\
+	const type& name() const { return GetValue(name##Property); }
+
 #define DECLARE_DP(class, name, type)	\
 	public: static DependencyProperty<type> name##Property;	\
-	class& name(const type& value) { return SetValue<type, class>(name##Property, value); }	\
+	class* name(const type& value) { return SetValue<type, class>(name##Property, value); }	\
 	const type& name() const { return GetValue(name##Property); }
 
 #define DECLARE_DP_REF(class, name, type)	\
