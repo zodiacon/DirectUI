@@ -1,20 +1,23 @@
 #include "stdafx.h"
 #include "..\DirectUI\DirectUI.h"
+#include <thread>
+#include <atomic>
 
 using namespace DirectUI;
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR lpCmdLine, int) {
 	Application app;
+	app.Initialize();
 
 	Window window1(L"Hello, World!");
 	auto stack = Create<StackLayout>();
 	stack->Background(Create<SolidColorBrush>(Colors::DarkCyan()));
 
 	auto r1 = Create<DirectUI::Rectangle>();
-    r1->Fill(Create<SolidColorBrush>(Colors::Yellow()))->StrokeWidth(5)->Width(200)->Height(150);
+	r1->Fill(Create<SolidColorBrush>(Colors::Yellow()))->StrokeWidth(5)->Width(200)->Height(150);
 
 	stack->AddChild(r1);
-	
+
 	auto r2 = Create<DirectUI::Rectangle>();
 	r2->Fill(Create<SolidColorBrush>(Colors::Red()))->StrokeWidth(5)->Width(100)->Height(120);
 	stack->AddChild(r2);
@@ -28,8 +31,23 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR lpCmdLine, int) {
 
 	window1.Content(stack);
 
-    return app.Run();
+	auto b3 = Create<SolidColorBrush>(Colors::DarkCyan());
+	auto b4 = Create<SolidColorBrush>(Colors::LightBlue());
+	std::atomic<bool> done(false);
 
+	auto t = std::thread([&done](auto r1, auto b3, auto b4) {
+		while (!done) {
+			r1->Fill(b3);
+			std::this_thread::sleep_for(std::chrono::milliseconds(500));
+			r1->Fill(b4);
+			std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		}
+	}, r1, b3, b4);
+
+	auto rv = app.Run();
+	done = true;
+	t.join();
+	return rv;
 }
 
 

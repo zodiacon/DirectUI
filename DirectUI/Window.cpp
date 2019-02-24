@@ -74,25 +74,25 @@ LRESULT Window::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) {
 
 		break;
 
-    case WM_RBUTTONDOWN:
-    case WM_MBUTTONDOWN:
-    case WM_LBUTTONDOWN:
-        DispatchMouseEvent(UIElement::MouseDownEvent, wParam, lParam);
-        return 0;
+	case WM_RBUTTONDOWN:
+	case WM_MBUTTONDOWN:
+	case WM_LBUTTONDOWN:
+		DispatchMouseEvent(UIElement::MouseDownEvent, wParam, lParam);
+		return 0;
 
-    case WM_RBUTTONUP:
-    case WM_MBUTTONUP:
-    case WM_LBUTTONUP:
-        DispatchMouseEvent(UIElement::MouseUpEvent, wParam, lParam);
-        return 0;
+	case WM_RBUTTONUP:
+	case WM_MBUTTONUP:
+	case WM_LBUTTONUP:
+		DispatchMouseEvent(UIElement::MouseUpEvent, wParam, lParam);
+		return 0;
 
-    case WM_MOUSEMOVE:
-        DispatchMouseEvent(UIElement::MouseMoveEvent, wParam, lParam);
-        return 0;
+	case WM_MOUSEMOVE:
+		DispatchMouseEvent(UIElement::MouseMoveEvent, wParam, lParam);
+		return 0;
 
-    case WM_LBUTTONDBLCLK:
-        DispatchMouseEvent(UIElement::MouseDoubleClickEvent, wParam, lParam);
-        return 0;
+	case WM_LBUTTONDBLCLK:
+		DispatchMouseEvent(UIElement::MouseDoubleClickEvent, wParam, lParam);
+		return 0;
 
 	case WM_SIZE:
 		if (SIZE_MINIMIZED != wParam) {
@@ -107,20 +107,20 @@ LRESULT Window::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) {
 }
 
 void Window::DispatchMouseEvent(RoutedEvent<MouseEventArgs>& event, WPARAM wParam, LPARAM lParam) {
-    auto args = GetMouseEventArgs(wParam, lParam);
-    auto source = std::get<0>(args);
-    event.RaiseEvent(*source, std::get<1>(args));
+	auto args = GetMouseEventArgs(wParam, lParam);
+	auto source = std::get<0>(args);
+	event.RaiseEvent(*source, std::get<1>(args));
 }
 
 std::tuple<UIElement*, MouseEventArgs> Window::GetMouseEventArgs(WPARAM wParam, LPARAM lParam) {
 	MouseEventArgs args;
 	args.Button = static_cast<MouseButton>(wParam & static_cast<WPARAM>(MouseButton::AllButtons));
-    args.Keys = static_cast<MouseKeys>(wParam & static_cast<WPARAM>(MouseKeys::AllKeys));
+	args.Keys = static_cast<MouseKeys>(wParam & static_cast<WPARAM>(MouseKeys::AllKeys));
 	int x = GET_X_LPARAM(lParam), y = GET_Y_LPARAM(lParam);
-    float dpi = Application::Current()->GetDpi();
+	float dpi = Application::Current()->GetDpi();
 
-    Point2F point(x * 96 / dpi, y * 96 / dpi);
-    args.Position = point;
+	Point2F point(x * 96 / dpi, y * 96 / dpi);
+	args.Position = point;
 
 	UIElement* source = this;
 	auto content = Content();
@@ -143,12 +143,12 @@ void Window::Render() {
 
 	_current = this;
 
-    if (_isLayoutInvalid) {
-        auto content = Content();
-        if (content)
-            content->Measure(_dc.GetSize());
-        _isLayoutInvalid = false;
-    }
+	if (_isLayoutInvalid) {
+		auto content = Content();
+		if (content)
+			content->Measure(_dc.GetSize());
+		_isLayoutInvalid = false;
+	}
 
 	_dc.BeginDraw();
 	_dc.Clear(ClearColor());
@@ -161,20 +161,20 @@ void Window::Render() {
 }
 
 void Window::Invalidate() {
-    ::InvalidateRect(_hWnd, nullptr, FALSE);
+	::InvalidateRect(_hWnd, nullptr, FALSE);
 }
 
 void Window::Invalidate(const DX::RectF & rect) {
-    if (rect.IsEmpty())
-        return;
+	if (rect.IsEmpty())
+		return;
 
 	RECT rc = { (int)rect.Left, (int)rect.Top, (int)rect.Right, (int)rect.Bottom };
 	::InvalidateRect(_hWnd, &rc, FALSE);
 }
 
 void Window::InvalidateLayout(bool invalid) {
-    _isLayoutInvalid = invalid;
-    Invalidate();
+	_isLayoutInvalid = invalid;
+	Invalidate();
 }
 
 void Window::Draw(Direct2D::DeviceContext& dc) {

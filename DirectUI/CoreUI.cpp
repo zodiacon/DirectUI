@@ -77,6 +77,16 @@ DEFINE_EVENT(UIElement, MouseUp, MouseEventArgs, Bubbling);
 DEFINE_EVENT(UIElement, MouseMove, MouseEventArgs, Bubbling);
 DEFINE_EVENT(UIElement, MouseDoubleClick, MouseEventArgs, Bubbling);
 
+// Control
+
+bool Control::DoCustomRendering(DX::Direct2D::DeviceContext& dc, const DX::RectF& bounds) {
+	if (_renderer) {
+		_renderer(this, dc, bounds);
+		return true;
+	}
+	return false;
+}
+
 // ContentControl
 
 ContentControl::ContentControl() {

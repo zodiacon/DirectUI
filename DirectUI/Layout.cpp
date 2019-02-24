@@ -110,7 +110,7 @@ void StackLayout::Measure(const DX::SizeF& maximumSize) {
                 max = size.Height;
         }
         else {
-            size.Height += desiredSize.Height + margin.Top+ margin.Bottom;
+            size.Height += desiredSize.Height + margin.Top + margin.Bottom;
             if (size.Height > max)
                 max = size.Height;
         }

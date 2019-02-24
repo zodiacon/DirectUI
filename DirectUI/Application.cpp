@@ -99,8 +99,10 @@ void Application::OnExit() {
 int Application::Run() {
 	MSG msg;
 	while (auto result = GetMessage(&msg, 0, 0, 0)) {
-		if (-1 != result) 
-			DispatchMessage(&msg);
+		if (-1 != result) {
+			::TranslateMessage(&msg);
+			::DispatchMessage(&msg);
+		}
 	}
 
 	return 0;

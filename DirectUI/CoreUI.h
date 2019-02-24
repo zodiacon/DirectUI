@@ -208,6 +208,17 @@ namespace DirectUI {
 	class Control abstract : public UIElement {
 		DECLARE_DP(Control, Padding, Thickness);
 
+	public:
+		template<typename Callable>
+		void SetRenderer(Callable&& renderer) {
+			_renderer = renderer;
+		}
+
+	protected:
+		bool DoCustomRendering(DX::Direct2D::DeviceContext& dc, const DX::RectF& bounds);
+
+	protected:
+		std::function<void(Control*, DX::Direct2D::DeviceContext& dc, const DX::RectF& bounds)> _renderer;
 	};
 
 	class ContentControl : public Control {

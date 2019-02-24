@@ -21,11 +21,13 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR lpCmdLine, int) {
 		auto tb = Create<TextBlock>();
 		const wchar_t text[] = { (const wchar_t)(i + L'0'), L'\0' };
 		tb->Foreground(Create<SolidColorBrush>(Colors::Red()))->TextAlignment(TextAlignment::Center)->Text(text)->FontSize(30);
-		grid->AddEventHandler<MouseEventArgs>(UIElement::MouseDownEvent, [&yellow](auto& source, const auto& args) -> bool {
+		
+		grid->AddEventHandler(UIElement::MouseDownEvent, [&yellow](auto& source, const auto& args) {
 			source.Background(yellow ? Brushes::Blue() : Brushes::Yellow());
             yellow = !yellow;
-			return true;
+			return false;
 		});
+
 		grid->AddChild(tb);
 
 		canvas->X(grid, i * 50.0f + 20);

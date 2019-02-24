@@ -32,7 +32,9 @@ void Shape::OnDraw(Direct2D::DeviceContext& dc, const RectF& bounds) {
 }
 
 UIElement* Shape::HitTestCore(const Point2F& point) {
-	ASSERT(_geometry);
+	if (!_geometry)
+		return nullptr;
+
 	if (Fill() && _geometry.FillContainsPoint(point))
 		return this;
 	if (Stroke() && _geometry.StrokeContainsPoint(point, StrokeWidth()))

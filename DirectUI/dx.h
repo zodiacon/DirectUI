@@ -89,26 +89,26 @@ namespace DX {
 		};
 
 #define DEFINE_CLASS(THIS_CLASS, BASE_CLASS, INTERFACE)                                                                      \
-        THIS_CLASS() {}                                                                                                                        \
-        THIS_CLASS(THIS_CLASS const & other) : BASE_CLASS(other) {}                                                                            \
-        THIS_CLASS(THIS_CLASS && other)      : BASE_CLASS(std::move(other)) {}                                                                 \
-        THIS_CLASS(INTERFACE * other)        : BASE_CLASS(other) {}                                                                            \
-        THIS_CLASS & operator=(THIS_CLASS const & other) { Copy(other);            return *this; }                                             \
-        THIS_CLASS & operator=(THIS_CLASS && other)      { Move(std::move(other)); return *this; }                                             \
-        THIS_CLASS & operator=(INTERFACE * other)        { Copy(other);            return *this; }                                             \
-        Details::RemoveAddRefRelease<INTERFACE> * operator->() const { return static_cast<Details::RemoveAddRefRelease<INTERFACE> *>(Get()); } \
-        auto Get() const -> INTERFACE *     {                 return static_cast<INTERFACE *>(m_ptr.Get()); }                                  \
-        auto GetAddressOf() -> INTERFACE ** { ASSERT(!m_ptr); return reinterpret_cast<INTERFACE **>(m_ptr.GetAddressOf()); }
+		THIS_CLASS() {}                                                                                                                        \
+		THIS_CLASS(THIS_CLASS const & other) : BASE_CLASS(other) {}                                                                            \
+		THIS_CLASS(THIS_CLASS && other)      : BASE_CLASS(std::move(other)) {}                                                                 \
+		THIS_CLASS(INTERFACE * other)        : BASE_CLASS(other) {}                                                                            \
+		THIS_CLASS & operator=(THIS_CLASS const & other) { Copy(other);            return *this; }                                             \
+		THIS_CLASS & operator=(THIS_CLASS && other)      { Move(std::move(other)); return *this; }                                             \
+		THIS_CLASS & operator=(INTERFACE * other)        { Copy(other);            return *this; }                                             \
+		Details::RemoveAddRefRelease<INTERFACE> * operator->() const { return static_cast<Details::RemoveAddRefRelease<INTERFACE> *>(Get()); } \
+		auto Get() const -> INTERFACE *     {                 return static_cast<INTERFACE *>(m_ptr.Get()); }                                  \
+		auto GetAddressOf() -> INTERFACE ** { ASSERT(!m_ptr); return reinterpret_cast<INTERFACE **>(m_ptr.GetAddressOf()); }
 
 		// Would love to use a static_assert here but that can't appear inside the class definition.
 #define DEFINE_STRUCT(THIS_STRUCT, BASE_STRUCT)                                          \
-        THIS_STRUCT(BASE_STRUCT const & other)  { *this = reinterpret_cast<THIS_STRUCT const &>(other); }  \
-        auto Get() const -> BASE_STRUCT const * { ASSERT(sizeof(THIS_STRUCT) == sizeof(BASE_STRUCT));      \
-                                                  return reinterpret_cast<BASE_STRUCT const *>(this);   }; \
-        auto Get()       -> BASE_STRUCT *       { ASSERT(sizeof(THIS_STRUCT) == sizeof(BASE_STRUCT));      \
-                                                  return reinterpret_cast<BASE_STRUCT *>(this);         }; \
-        auto Ref() const -> BASE_STRUCT const & { return *Get();                                        }; \
-        auto Ref()       -> BASE_STRUCT &       { return *Get();                                        };
+		THIS_STRUCT(BASE_STRUCT const & other)  { *this = reinterpret_cast<THIS_STRUCT const &>(other); }  \
+		auto Get() const -> BASE_STRUCT const * { ASSERT(sizeof(THIS_STRUCT) == sizeof(BASE_STRUCT));      \
+												  return reinterpret_cast<BASE_STRUCT const *>(this);   }; \
+		auto Get()       -> BASE_STRUCT *       { ASSERT(sizeof(THIS_STRUCT) == sizeof(BASE_STRUCT));      \
+												  return reinterpret_cast<BASE_STRUCT *>(this);         }; \
+		auto Ref() const -> BASE_STRUCT const & { return *Get();                                        }; \
+		auto Ref()       -> BASE_STRUCT &       { return *Get();                                        };
 
 	} // Details
 
@@ -1312,9 +1312,9 @@ namespace DX {
 		RectF(const Point2F& topLeft, float width, float height)
 			: RectF(topLeft.X, topLeft.Y, topLeft.X + width, topLeft.Y + height) {}
 
-        bool IsEmpty() const {
-            return Width() == 0 || Height() == 0;
-        }
+		bool IsEmpty() const {
+			return Width() == 0 || Height() == 0;
+		}
 
 		auto Width() const -> float {
 			return Right - Left;
@@ -1340,12 +1340,12 @@ namespace DX {
 			return SizeF(Width(), Height());
 		}
 
-        void MoveSize(float left, float top, float right, float bottom) {
-            Left += left;
-            Top += top;
-            Right += right;
-            Bottom += bottom;
-        }
+		void MoveSize(float left, float top, float right, float bottom) {
+			Left += left;
+			Top += top;
+			Right += right;
+			Bottom += bottom;
+		}
 
 		float Left;
 		float Top;
@@ -3883,11 +3883,11 @@ namespace DX {
 			auto SetStrikethrough(bool hasStrikethrough,
 				TextRange const & textRange) const -> void;
 
-            auto GetMetrics()->TextMetrics {
-                DWRITE_TEXT_METRICS metrics;
-                Get()->GetMetrics(&metrics);
-                return TextMetrics(metrics);
-            }
+			auto GetMetrics()->TextMetrics {
+				DWRITE_TEXT_METRICS metrics;
+				Get()->GetMetrics(&metrics);
+				return TextMetrics(metrics);
+			}
 
 			// SetDrawingEffect
 
